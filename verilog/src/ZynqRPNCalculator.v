@@ -34,28 +34,28 @@ module ZynqRPNCalculator #(
      
       if (reset)
         begin
-          for (stack_index = 0; stack_index < STACKDEPTH;stack_index++)
+          for (stack_index = 0; stack_index < STACKDEPTH;stack_index = stack_index + 1)
              stack[stack_index] = 0;
         end 
       else if (push) 
         begin 
-          for (stack_index = STACKDEPTH-2; stack_index >= 0;stack_index--)
+          for (stack_index = STACKDEPTH-2; stack_index >= 0;stack_index = stack_index - 1)
             stack[stack_index+1] = stack[stack_index];
           stack[0] = value;
         end
       else if (pop) 
         begin 
-          for (stack_index = 0; stack_index < STACKDEPTH-1;stack_index++)
+          for (stack_index = 0; stack_index < STACKDEPTH-1;stack_index = stack_index + 1)
             stack[stack_index] = stack[stack_index +1];
         end 
       else if (add || sub || mul) 
         begin 
 
-          if (add) stack[0] = stack[0]+stack[1]; 
+          if      (add) stack[0] = stack[0]+stack[1]; 
           else if (sub) stack[0] = stack[1]-stack[0]; 
           else if (mul) stack[0] = stack[1][7:0]*stack[0][7:0]; 
 
-          for (stack_index = 1; stack_index < STACKDEPTH-1;stack_index++)
+          for (stack_index = 1; stack_index < STACKDEPTH-1;stack_index = stack_index + 1)
             stack[stack_index] = stack[stack_index+1];
 
         end 
