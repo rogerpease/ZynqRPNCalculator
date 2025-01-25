@@ -44,6 +44,10 @@
 		input wire  s00_axi_rready
 	);
 	
+        initial begin
+           $dumpfile("wave2.vcd"); // Specify the VCD file name
+           $dumpvars(); 
+        end
 	
         wire  [31:0] value;
         wire   clock;
@@ -61,7 +65,6 @@
 		.C_S_AXI_ADDR_WIDTH(C_S00_AXI_ADDR_WIDTH)
 	) ZynqRPNCalculator_v1_0_S00_AXI_inst (
 	         .value(value),
-             .clock(clock),
              .reset(reset),
              .pop(pop),
              .push(push),
@@ -69,37 +72,36 @@
              .sub(sub),
              .mul(mul), 
              .stack0(stack0),
-		.S_AXI_ACLK(s00_axi_aclk),
-		.S_AXI_ARESETN(s00_axi_aresetn),
-		.S_AXI_AWADDR(s00_axi_awaddr),
-		.S_AXI_AWPROT(s00_axi_awprot),
-		.S_AXI_AWVALID(s00_axi_awvalid),
-		.S_AXI_AWREADY(s00_axi_awready),
-		.S_AXI_WDATA(s00_axi_wdata),
-		.S_AXI_WSTRB(s00_axi_wstrb),
-		.S_AXI_WVALID(s00_axi_wvalid),
-		.S_AXI_WREADY(s00_axi_wready),
-		.S_AXI_BRESP(s00_axi_bresp),
-		.S_AXI_BVALID(s00_axi_bvalid),
-		.S_AXI_BREADY(s00_axi_bready),
-		.S_AXI_ARADDR(s00_axi_araddr),
-		.S_AXI_ARPROT(s00_axi_arprot),
-		.S_AXI_ARVALID(s00_axi_arvalid),
-		.S_AXI_ARREADY(s00_axi_arready),
-		.S_AXI_RDATA(s00_axi_rdata),
-		.S_AXI_RRESP(s00_axi_rresp),
-		.S_AXI_RVALID(s00_axi_rvalid),
-		.S_AXI_RREADY(s00_axi_rready)
+           .S_AXI_ACLK(s00_axi_aclk),
+           .S_AXI_ARESETN(s00_axi_aresetn),
+           .S_AXI_AWADDR(s00_axi_awaddr),
+           .S_AXI_AWPROT(s00_axi_awprot),
+           .S_AXI_AWVALID(s00_axi_awvalid),
+           .S_AXI_AWREADY(s00_axi_awready),
+           .S_AXI_WDATA(s00_axi_wdata),
+           .S_AXI_WSTRB(s00_axi_wstrb),
+           .S_AXI_WVALID(s00_axi_wvalid),
+           .S_AXI_WREADY(s00_axi_wready),
+           .S_AXI_BRESP(s00_axi_bresp),
+           .S_AXI_BVALID(s00_axi_bvalid),
+           .S_AXI_BREADY(s00_axi_bready),
+           .S_AXI_ARADDR(s00_axi_araddr),
+           .S_AXI_ARPROT(s00_axi_arprot),
+           .S_AXI_ARVALID(s00_axi_arvalid),
+           .S_AXI_ARREADY(s00_axi_arready),
+           .S_AXI_RDATA(s00_axi_rdata),
+           .S_AXI_RRESP(s00_axi_rresp),
+           .S_AXI_RVALID(s00_axi_rvalid),
+           .S_AXI_RREADY(s00_axi_rready)
 	);
 
-	// Add user logic here
+// Add user logic here
     ZynqRPNCalculator  #(
-
     .STACKDEPTH(32)
     ) ZynqRPNCalculator_instance
     (
     .value(value),
-    .clock(clock),
+    .clock(s00_axi_aclk),
     .reset(reset),
     .pop(pop),
     .push(push),

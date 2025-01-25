@@ -15,15 +15,15 @@
 	)
 	(
 		// Users to add ports here
-             output  [31:0] value,
-             output  wire   clock,
-             output  wire   reset,
-             output  wire   pop,
-             output  wire   push,
-             output  wire   add,
-             output  wire   sub,
-             output  wire   mul, 
-             input [31:0] stack0,
+                output  [31:0] value,
+                output  reg reset,
+                output  reg pop,
+                output  reg push,
+                output  reg add,
+                output  reg sub,
+                output  reg mul, 
+                input [31:0] stack0,
+
 		// User ports ends
 		// Do not modify the ports beyond this line
 
@@ -226,6 +226,13 @@
 
 	always @( posedge S_AXI_ACLK )
 	begin
+          push <= 0;
+          pop <= 0;
+          add <= 0;
+          sub <= 0;
+          mul <= 0;
+          reset <= 0;
+
 	  if ( S_AXI_ARESETN == 1'b0 )
 	    begin
 	      slv_reg0 <= 0;
@@ -238,26 +245,23 @@
 	      begin
 	        case ( axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
 	          2'h0:
-	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
-	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+                    begin 
+    	              for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
+	                if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 0
-	                slv_reg0[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-	              end  
+	                  slv_reg0[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                end  
+	            end  
 	          2'h1:
-	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
-	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
-	                // Respective byte enables are asserted as per write strobes 
-	                // Slave register 1
-	                slv_reg1[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-	              end  
-	          2'h2:
-	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
-	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
-	                // Respective byte enables are asserted as per write strobes 
-	                // Slave register 2
-	                slv_reg2[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-	              end  
+                    begin  // RDP: I changed this to be a one-cycle one-hot indication of command to run. Reading this returns 0 
+	             reset <= S_AXI_WDATA[0];
+	             push  <= S_AXI_WDATA[1];
+	             pop   <= S_AXI_WDATA[2];
+	             add   <= S_AXI_WDATA[3];
+	             sub   <= S_AXI_WDATA[4];
+	             mul   <= S_AXI_WDATA[5];
+                    end  
 	          2'h3:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
@@ -267,8 +271,8 @@
 	              end  
 	          default : begin
 	                      slv_reg0 <= slv_reg0;
-	                      slv_reg1 <= slv_reg1;
-	                      slv_reg2 <= slv_reg2;
+	                      slv_reg1 <= 0;
+	                      slv_reg2 <= 0;
 	                      slv_reg3 <= slv_reg3;
 	                    end
 	        endcase
@@ -321,7 +325,7 @@
 	  if ( S_AXI_ARESETN == 1'b0 )
 	    begin
 	      axi_arready <= 1'b0;
-	      axi_araddr  <= 32'b0;
+	      axi_araddr  <= 4'b0;
 	    end 
 	  else
 	    begin    
@@ -378,11 +382,11 @@
 	begin
 	      // Address decoding for reading registers
 	      case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
-	        2'h0   : reg_data_out <= slv_reg0;
-	        2'h1   : reg_data_out <= slv_reg1;
-	        2'h2   : reg_data_out <= slv_reg2;
-	        2'h3   : reg_data_out <= slv_reg3;
-	        default : reg_data_out <= 0;
+	        2'h0   : reg_data_out = slv_reg0;
+	        2'h1   : reg_data_out = 0;
+	        2'h2   : reg_data_out = stack0;
+	        2'h3   : reg_data_out = slv_reg3;
+	        default : reg_data_out = 0;
 	      endcase
 	end
 
@@ -406,7 +410,7 @@
 	end    
 
 	// Add user logic here
-
+        assign value = slv_reg0;
 
 	// User logic ends
 

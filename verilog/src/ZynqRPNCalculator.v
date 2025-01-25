@@ -3,6 +3,8 @@
 // Implement a simple Zynq RPN Calculator. 
 //  https://rogerpease.com/index.php/zynq-7000-rpn-calculator-with-kernel-driver/ for more details. 
 // 
+`timescale 1 ns / 1 ps
+
 module ZynqRPNCalculator #(
 
    parameter integer STACKDEPTH = 32
