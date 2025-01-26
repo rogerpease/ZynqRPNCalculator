@@ -105,11 +105,12 @@ ssize_t zynqRPNDriverFileRead (struct file *filp, char * buf, size_t byteCount, 
 
     // Read Register 8, which contains our stack value. 
     regs = ioremap(0x40000008, 4);
-
     register2value = readl(regs);
+    iounmap(regs);
+
     sprintf(stack0valueorerror,"V%8.8lu",register2value);  
     messageLen = 9; 
-    iounmap(regs);
+
     pr_info("Read function sending %s\n",stack0valueorerror); 
    
     bytesRead = 0;
