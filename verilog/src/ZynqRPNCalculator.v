@@ -23,7 +23,7 @@ module ZynqRPNCalculator #(
 );
 
 
-    reg [STACKDEPTH-1:0][31:0] stack;
+    reg [31:0] stack [STACKDEPTH-1:0];
     integer stack_index;
 
     //
